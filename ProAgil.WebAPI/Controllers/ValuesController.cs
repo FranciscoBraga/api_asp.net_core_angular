@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ProAgil.WebAPI.Data;
 using ProAgil.WebAPI.Model;
 
 namespace ProAgil.WebAPI.Controllers
@@ -11,62 +14,43 @@ namespace ProAgil.WebAPI.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
+        public readonly DataContext _context;
+
+        public ValuesController(DataContext context)
+        {
+            this._context = context;
+
+        }
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<Evento>> Get()
+        public async Task<IActionResult> Get()
         {
-            return new Evento[] 
-            { 
-                new Evento()
-                {
-                    EventoId =1,
-                    Tema ="Asp.net Core e Angular",
-                    Local= "Cuiabá",
-                    Lote = "1º lote",
-                     QtaPessoas = 250,
-                    DataEvento = DateTime.Now.AddDays(2).ToString("dd/MM/yyyy")             
-
-                },
-                new Evento()
-                {
-                    EventoId =2,
-                    Tema ="Node.js",
-                    Local= "Cuiabá",
-                    Lote = "2º lote",
-                     QtaPessoas = 250,
-                    DataEvento = DateTime.Now.AddDays(5).ToString("dd/MM/yyyy")             
-
-                },
-            };
+          try
+          {
+              var result = await _context.Eventos.ToListAsync();
+              return Ok(result);
+          }
+          catch (System.Exception)
+          {
+              
+              return this.StatusCode(StatusCodes.Status500InternalServerError,"Error servidor não encotrado");
+          }
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public ActionResult<Evento> Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            return new Evento[] 
-            { 
-                new Evento()
-                {
-                    EventoId =1,
-                    Tema ="Asp.net Core e Angular",
-                    Local= "Cuiabá",
-                    Lote = "1º lote",
-                     QtaPessoas = 250,
-                    DataEvento = DateTime.Now.AddDays(2).ToString("dd/MM/yyyy")             
-
-                },
-                new Evento()
-                {
-                    EventoId =2,
-                    Tema ="Node.js",
-                    Local= "Cuiabá",
-                    Lote = "2º lote",
-                     QtaPessoas = 250,
-                    DataEvento = DateTime.Now.AddDays(5).ToString("dd/MM/yyyy")             
-
-                },
-            }.FirstOrDefault(x=>x.EventoId == id);
+            try
+          {
+              var result = await _context.Eventos.FirstOrDefaultAsync(x => x.EventoId == id);;
+              return Ok(result);
+          }
+          catch (System.Exception)
+          {
+              
+              return this.StatusCode(StatusCodes.Status500InternalServerError,"Error servidor não encotrado");
+          }
         }
 
         // POST api/values
