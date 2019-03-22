@@ -47,6 +47,8 @@ namespace ProAgil.WebAPI
 
             //app.UseHttpsRedirection();
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            //habilitando para utilizar arquivos estáticos
+            app.UseStaticFiles();
             app.UseMvc();
         }
     }
