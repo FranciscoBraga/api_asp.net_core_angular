@@ -12,7 +12,7 @@ namespace ProAgil.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EventoController
+    public class EventoController : ControllerBase
     {
         private readonly IProAgilRepository _repo;
 
@@ -31,7 +31,7 @@ namespace ProAgil.WebAPI.Controllers
             }
             catch(System.Exception)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError,"Error servidor não encotrado");
+                return this.StatusCode(StatusCodes.Status500InternalServerError,"Error servidor não encotrado ");
             }
         }
 
@@ -40,7 +40,7 @@ namespace ProAgil.WebAPI.Controllers
         {
             try
             {
-                var result = await _repo.GetAllEventoByID(EventoId);
+                var result = await _repo.GetAllEventoAsyncByID(EventoId, false);
                 return Ok(result);
             }
             catch(System.Exception)
@@ -51,7 +51,7 @@ namespace ProAgil.WebAPI.Controllers
 
         
         [HttpGet("/getByTema/{tema}")]
-          public async Task<IActionResult> Get(string tema)
+        public async Task<IActionResult> Get(string tema)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace ProAgil.WebAPI.Controllers
         }
 
         [HttpPost]
-          public async Task<IActionResult> Post(Evento model)
+        public async Task<IActionResult> Post(Evento model)
         {
             try
             {
@@ -78,18 +78,18 @@ namespace ProAgil.WebAPI.Controllers
             }
             catch(System.Exception)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError,"Error servidor não encotrado");
+                return this.StatusCode(StatusCodes.Status500InternalServerError,"Error servidor não encotrado. No momento de criar evento ");
             }
 
                 return BadRequest();
         }
 
-         [HttpPut]
-          public async Task<IActionResult> Put(int EventoId, Evento model)
+        [HttpPut]
+        public async Task<IActionResult> Put(int EventoId, Evento model)
         {
             try
             {
-                var evento = await _repo.GetAllEventoByID(EventoId,false);
+                var evento = await _repo.GetAllEventoAsyncByID(EventoId,false);
                 if(evento == null) return NotFound();
 
                 _repo.Update(model);
@@ -113,14 +113,15 @@ namespace ProAgil.WebAPI.Controllers
         {
             try
             {
-                var evento = await _repo.GetAllEventoByID(EventoId,false);
+                var evento = await _repo.GetAllEventoAsyncByID(EventoId,false);
                 if(evento == null) return NotFound();
 
-                _repo.Delete(model);
+                _repo.Delete(evento);
 
                 if(await _repo.SaveChangesAsync())
                 {
-                    return OK();
+                    //return OK();
+                      
                 }
                
             }
