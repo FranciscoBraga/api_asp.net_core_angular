@@ -1,4 +1,5 @@
 ﻿using System;
+using AutoMapper;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ProAgil.Repository;
+
 
 namespace ProAgil.WebAPI
 {
@@ -29,6 +31,9 @@ namespace ProAgil.WebAPI
         {
             services.AddDbContext<ProAgilContext>(x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<IProAgilRepository, ProAgilRepo>();
+            
+            services.AddAutoMapper();
+            
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddCors();
         }
