@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using ProAgil.Repository;
 using ProAgil.Domain;
 using ProAgil.WebAPI.Dtos;
+using System.IO;
+using System.Net.Http.Headers;
 
 namespace ProAgil.WebAPI.Controllers
 {
@@ -93,6 +95,39 @@ namespace ProAgil.WebAPI.Controllers
             }
 
                 return BadRequest();
+        }
+
+        [HttpPost("upload")]
+        public async Task<IActionResult> upload()
+        {
+            try
+            {
+                var file = Request.Form.Files[0];
+                var folderName = Path.Combine("Resources","Images");
+                var pathSave = Path.Combine(Directory.GetCurrentDirectory(),folderName);
+
+                if(file.Length > 0){
+                    var filename = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName;
+                    var fullPath = Path.Combine(pathSave, filename.Replace("\"", " ").Trim());
+
+                    using(var stream = new FileStream(fullPath, FileMode.Create))
+                    {
+                        file.CopyTo(stream);
+                    }
+                }
+              
+                if(await _repo.SaveChangesAsync())
+                {
+                   return Ok();
+                }
+               
+            }
+            catch(System.Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError,"Error servidor não encotrado. No momento de criar evento" + ex.Message);
+            }
+
+                return BadRequest("Error ao tentar realizar upload");
         }
 
         [HttpPut("{EventoId}")]

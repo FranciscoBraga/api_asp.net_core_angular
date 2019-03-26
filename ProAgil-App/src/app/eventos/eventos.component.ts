@@ -27,8 +27,15 @@ export class EventosComponent implements OnInit {
   mostrarImagem = false;
   registerForm: FormGroup;
   bodyDeletarEvento = '';
+  
+  file: File;
+  fileNameToUpdate: string;
+
+  dataAtual: string;
 
   _filtroLista = '';
+
+
 
   constructor(
      private eventoService: EventoService
@@ -52,8 +59,10 @@ export class EventosComponent implements OnInit {
   editarEvento(evento: Evento, template: any){
     this.modoSalvar = 'put';
     this.openModal(template);
-    this.evento = evento;
-    this.registerForm.patchValue(evento);
+    this.evento = Object.assign({}, evento);
+    this.fileNameToUpdate = evento.imagemUrl.toString();
+    this.evento.imagemUrl = '';
+    this.registerForm.patchValue(this.evento);
   }
 
   novoEvento(template: any){
@@ -124,10 +133,36 @@ export class EventosComponent implements OnInit {
     });
   }
 
+  uploadImage(){
+    if(this.modoSalvar === 'post'){
+      const nomeArquivo = this.evento.imagemUrl.split('\\', 3);
+      this.evento.imagemUrl = nomeArquivo[2];
+
+      this.eventoService.postUpload(this.file, nomeArquivo[2]).subscribe(
+        () => {
+         this.dataAtual = new Date().getDate().toString();
+          this.getEventos();
+        }
+      );
+    }else{
+      this.evento.imagemUrl = this.fileNameToUpdate;
+      this.eventoService.postUpload(this.file, this.fileNameToUpdate).subscribe(
+        () => {
+          this.dataAtual = new Date().getDate().toString();
+          this.getEventos();
+        }
+      );
+
+    }
+  }
+
   salvarAlteracao(template: any){
     if(this.registerForm.valid){
       if(this.modoSalvar === 'post'){
         this.evento = Object.assign({}, this.registerForm.value);
+
+        this.uploadImage();
+
         this.eventoService.postEvento(this.evento).subscribe(
           (novoEvento: Evento) => {
             console.log(novoEvento);
@@ -142,6 +177,9 @@ export class EventosComponent implements OnInit {
       }
        else {
         this.evento = Object.assign({id: this.evento.id}, this.registerForm.value);
+
+        this.uploadImage();
+
         this.eventoService.putEvento(this.evento).subscribe(
           (editar: Evento) => {
             console.log(editar);
@@ -155,6 +193,15 @@ export class EventosComponent implements OnInit {
       );
       }
     }
+  }
+
+  onFileChange(event){
+   const reader =  new FileReader();
+
+   if(event.target.files && event.target.files.length){
+      this.file = event.target.files;
+      console.log(this.file);
+   }
   }
 
 }
