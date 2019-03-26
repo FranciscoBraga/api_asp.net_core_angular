@@ -95,7 +95,7 @@ namespace ProAgil.WebAPI.Controllers
                 return BadRequest();
         }
 
-        [HttpPut]
+        [HttpPut("{EventoId}")]
         public async Task<IActionResult> Put(int EventoId, EventoDto model)
         {
             try
@@ -122,7 +122,7 @@ namespace ProAgil.WebAPI.Controllers
                 return BadRequest();
         }
 
-        [HttpDelete]
+        [HttpDelete("{EventoId}")]
           public async Task<IActionResult> Delete(int EventoId)
         {
             try
@@ -142,7 +142,7 @@ namespace ProAgil.WebAPI.Controllers
             }
             catch(System.Exception)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError,"Error servidor não encotrado");
+                return this.StatusCode(StatusCodes.Status500InternalServerError,"Error servidor não encontrado");
             }
 
                 return BadRequest();
