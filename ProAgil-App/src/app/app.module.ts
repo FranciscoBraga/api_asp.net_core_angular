@@ -1,7 +1,7 @@
 
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { ButtonsModule,  ModalModule, TooltipModule,  BsDropdownModule, BsDatepickerModule } from 'ngx-bootstrap';
 import { AppRoutingModule } from './app-routing.module';
@@ -20,6 +20,10 @@ import { PalestranteComponent } from './palestrante/palestrante.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ContatoComponent } from './contato/contato.component';
 import { TituloComponent } from './_shared/titulo/titulo.component';
+import { UserComponent } from './user/user.component';
+import { RegistrationComponent } from './user/registration/registration.component';
+import { LoginComponent } from './user/login/login.component';
+import { AuthInterceptor } from './auth/auth.interceptor';
 
 
 
@@ -33,7 +37,11 @@ import { TituloComponent } from './_shared/titulo/titulo.component';
       PalestranteComponent,
       DashboardComponent,
       ContatoComponent,
-      TituloComponent
+      TituloComponent,
+      UserComponent,
+      LoginComponent,
+      RegistrationComponent
+     
    ],
    imports: [
       BrowserModule,
@@ -50,7 +58,12 @@ import { TituloComponent } from './_shared/titulo/titulo.component';
       ReactiveFormsModule
    ],
    providers: [
-      EventoService
+      EventoService,
+      {
+         provide: HTTP_INTERCEPTORS,
+         useClass:AuthInterceptor,
+         multi: true
+      }
    ],
    bootstrap: [
       AppComponent
